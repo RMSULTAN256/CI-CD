@@ -9,3 +9,5 @@ git commit -m "updating"
 sleep 3
 git push origin main
 sleep 2
+
+clear
