@@ -26,5 +26,10 @@ jobs:
       - uses: actions/checkout@v4
 
       # Runs a single command using the runners shell
-      - name: Testing
-        run: echo Hello, world!
+      - name: installing stuff
+        run: |
+          pip install bandit
+
+      - name: testing sec
+        run: |
+          bandit *.py
