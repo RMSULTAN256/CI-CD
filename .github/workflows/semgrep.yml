@@ -33,9 +33,5 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install Nuclei (Official Method)
         run: |
-          wget https://github.com/projectdiscovery/nuclei/releases/latest/download/nuclei-linux-amd64.zip
-          unzip nuclei-linux-amd64.zip
-          chmod +x nuclei
-          sudo mv nuclei /usr/local/bin/
-
-          nuclei -version
+          docker pull projectdiscovery/nuclei
+          docker run --rm projectdiscovery/nuclei -version
