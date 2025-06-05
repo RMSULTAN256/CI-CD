@@ -22,7 +22,7 @@ jobs:
       image: semgrep/semgrep
     steps:
       - uses: actions/checkout@v4
-      - run: semgrep scan --config auto --json --json-output=semgrep.json
+      - run: semgrep scan --config auto
 
   nuclei:
     name: nuclei DAST
