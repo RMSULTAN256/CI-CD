@@ -33,5 +33,5 @@ jobs:
       - uses: actions/checkout@v4
       - name: install nuclei and run
         run: |
-          install nuclei \
+          sudo apt install nuclei \
           | nuclei -target app.py -file -type file
