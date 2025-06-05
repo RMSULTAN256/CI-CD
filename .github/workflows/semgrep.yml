@@ -22,7 +22,8 @@ jobs:
       image: semgrep/semgrep
     steps:
       - uses: actions/checkout@v4
-      - run: semgrep ci
+      - run: semgrep scan --config auto --json --json-output=semgrep.json
+
   nuclei:
     name: nuclei DAST
     runs-on: ubuntu-latest
