@@ -34,5 +34,4 @@ jobs:
       - name: Install Nuclei (Official Method)
         run: |
           docker pull projectdiscovery/nuclei
-          docker run --rm projectdiscovery/nuclei -target app.py -file -tyle file
-          
+          docker run --rm projectdiscovery/nuclei -target app.py -file -type file
