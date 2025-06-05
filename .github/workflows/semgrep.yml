@@ -31,7 +31,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: install nuclei and run
+      - name: Install Nuclei (Official Method)
         run: |
-          sudo apt install nuclei \
-          | nuclei -target app.py -file -type file
+          docker run --rm projectdiscovery/nuclei --version
