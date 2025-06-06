@@ -1,10 +1,14 @@
 pipeline {
-  agent any
-  
+  agent {
+    docker {
+      image 'ubuntu'
+    }
+  }
+
   stages {
     stage('Test') {
       steps {
-        bat 'echo "Running inside Ubuntu container"'
+        sh 'echo "Running inside Ubuntu container"'
       }
     }
   }
