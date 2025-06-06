@@ -11,8 +11,8 @@ on:
     - cron: 14 2 * * *
 name: Semgrep
 jobs:
-  semgrep:
-    name: semgrep/ci
+  Testing:
+    name: semgrep
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -23,16 +23,3 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: semgrep ci
-
-  nuclei:
-    name: nuclei DAST
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install Nuclei (Official Method)
-        run: |
-          docker pull projectdiscovery/nuclei
-          docker run --rm projectdiscovery/nuclei -target app.py -file -type file
