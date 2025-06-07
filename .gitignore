@@ -2,3 +2,4 @@
 !*.secret
 .git
 .gitsecret
+.run
