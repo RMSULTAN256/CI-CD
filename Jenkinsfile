@@ -16,7 +16,7 @@ pipeline {
             fi
 
             if ! command -v semgrep >/dev/null; then
-              pip3 install semgrep --user
+              sudo apt install semgrep
               export PATH=$PATH:$HOME/.local/bin
             fi
 
