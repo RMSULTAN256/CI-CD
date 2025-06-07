@@ -31,6 +31,8 @@ jobs:
         with:
           scan-type: fs
           input: .
+          format: json
+          output: trivy-report.json
 
       - name: Install Dependencies
         run: |
@@ -44,69 +46,62 @@ jobs:
           pip install pytest
           pytest app.py
 
-      - name: Run flask app in background
-        run: |
-          nohup python app.py &
-          sleep 30
-
   SAST:
     name: semgrep
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      security-events: write
     container:
       image: semgrep/semgrep
 
     steps:
       - uses: actions/checkout@v4
       - name: semgrep scan
-        run: semgrep --config=auto --json --output semgrep-report.json
+        run: semgrep --config=.semgrep.yml --jsarif --output semgrep-report.sarif
 
       - name: upload semgrep report
-        uses: actions/upload-artifact@v4
+        uses: github/codeql-action/upload-sarif@v3
         with:
-          name: semgrep-report
-          path: semgrep-report.json
-
+          sarif_file: semgrep-report.sarif
   DAST:
-    name: DAST with Zaproxy
+    name: DAST with Nuclei
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    needs: Testing-unit
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
-
-      - name: Run flask app in background
+      - name: Install Flask
+        run: pip install flask
+      - name: Run Flask app in background
         run: |
-          pip install flask
           nohup python app.py &
-          sleep 10
-
-      - name: Install Nuclei (DAST Tool)
+          sleep 30
+        env:
+          APP_URL: ${{ env.APP_URL || 'http://localhost:5000' }}
+      - name: Run Nuclei Scan
         run: |
-          echo "http://localhost:5000" > targets.txt
+          echo "${{ env.APP_URL }}" > targets.txt
           docker run --rm \
-          --add-host=host.docker.internal:host-gateway \
           -v ${{ github.workspace }}:/nuclei projectdiscovery/nuclei \
-          -u http://host.docker.internal:5000 \
-          -severity critical,high,medium \
+          -t vulnerabilities -t cves -severity critical,high,medium \
+          -u ${{ env.APP_URL }} \
           -o /nuclei/nuclei-results.txt || true
-
       - name: Conditionally upload results
-        if: success()
+        if: always()
         run: |
           if [ -s nuclei-results.txt ]; then
-            echo "Vulnerabilities found, Uploading Artifact.."
+            echo "Vulnerabilities found, uploading artifact..."
             echo "upload=true" >> $GITHUB_ENV
           else
             echo "No vulnerabilities found, skipping upload."
             echo "upload=false" >> $GITHUB_ENV
           fi
-
-      - name: Upload ZAP Report
+      - name: Upload Nuclei Report
         if: env.upload == 'true'
         uses: actions/upload-artifact@v4
         with:
