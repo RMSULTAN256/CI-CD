@@ -87,17 +87,18 @@ jobs:
 
       - name: Install Nuclei (DAST Tool)
         run: |
-          echo "http:localhost:5000" > targets.txt
-          docker pull projectdiscovery/nuclei
-          docker run --rm -v ${{ github.workspace }}:/nuclei projectdiscovery/nuclei \
-          -u http://localhost:5000 \
+          echo "http://localhost:5000" > targets.txt
+          docker run --rm \
+          --add-host=host.docker.internal:host-gateway \
+          -v ${{ github.workspace }}:/nuclei projectdiscovery/nuclei \
+          -u http://host.docker.internal:5000 \
           -severity critical,high,medium \
           -o /nuclei/nuclei-results.txt || true
 
       - name: Conditionally upload results
         if: success()
         run: |
-          if [ -s scan-results.txt ]; then
+          if [ -s nuclei-results.txt ]; then
             echo "Vulnerabilities found, Uploading Artifact.."
             echo "upload=true" >> $GITHUB_ENV
           else
@@ -110,4 +111,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: nuclei-report
-          path: scan-results.txt
+          path: nuclei-results.txt
