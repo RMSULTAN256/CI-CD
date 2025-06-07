@@ -49,6 +49,7 @@ jobs:
   SAST:
     name: semgrep
     runs-on: ubuntu-latest
+    needs: Testing-unit
     permissions:
       contents: read
       security-events: write
@@ -67,6 +68,7 @@ jobs:
   DAST:
     name: DAST with Wapiti
     runs-on: ubuntu-latest
+    needs: SAST
     permissions:
       contents: read
     steps:
