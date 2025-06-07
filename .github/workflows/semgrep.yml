@@ -66,9 +66,10 @@ jobs:
           sarif_file: semgrep-report.sarif
   DAST:
     name: DAST with OWASP ZAP
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -85,8 +86,8 @@ jobs:
       - name: Run OWASP ZAP Baseline Scan
         run: |
           docker pull ghcr.io/zaproxy/zaproxy:stable
-          docker run -v $(pwd):/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t http://localhost:5000 \
-            
+          docker run -v $(pwd):/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
+            -t ${{ env.APP_URL }} \
             -J report_json.json \
             -w report_md.md \
             -r report_html.html \
@@ -95,7 +96,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: zap-report
+          name: zap-report-${{ matrix.os }}
           path: |
             report_json.json
             report_md.md
