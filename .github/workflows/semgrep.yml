@@ -11,14 +11,6 @@ on:
     - cron: 14 2 * * *
 
 jobs:
-  Depend:
-    name: Testing Dependecies
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-
-    steps:
-
   Testing-unit:
     name: Testing Code
     runs-on: ubuntu-latest
