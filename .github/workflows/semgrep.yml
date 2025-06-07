@@ -11,16 +11,35 @@ on:
     - cron: 14 2 * * *
 
 jobs:
-  run-flask:
-    name: Testing Flask
+  Testing-unit:
+    name: Testing Code
     runs-on: ubuntu-latest
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
-      - name: Run Flask App.py
+      - name: Checking Repository
+        uses: actions/checkout@v4
+
+      - name: Checking Setup python
+        uses: actions/setup-python@v5
+
+      - name: Install Dependencies
         run: |
-          python3 app.py
+          python -m pip install --upgrade pip
+          pip install pytest safety
+          pip install -r requirements.txt
+
+      - name: Run Tests
+        id: pytest-step
+        continue-on-error: true
+        run: |
+          pytest
+
+      - name: Checking Depedencies
+        id: safety-step
+        continue-on-error: true
+        run: |
+          safety check
 
   Testing:
     name: semgrep

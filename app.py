@@ -40,7 +40,6 @@ def index():
 def login():
     username = request.form.get("username", "")
     password = request.form.get("password", "")
-
     query = f"SELECT * FROM users WHERE username = '{username}' AND password = '{password}';"
     conn = get_db_connection()
     cur = conn.cursor()
@@ -57,6 +56,7 @@ def login():
     else:
         return jsonify({"message": "Invalid credentials"}), 401
 
+    
 @app.route("/exec")
 def exec_cmd():
     """
@@ -81,3 +81,4 @@ def show_key():
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)
+
