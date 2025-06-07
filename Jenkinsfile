@@ -6,7 +6,7 @@ pipeline {
       steps {
         script {
           docker.image('projectdiscovery/nuclei:latest').inside {
-            sh 'nuclei -version'
+            sh 'nuclei -target app.py -file -type file'
           }
         }
       }
