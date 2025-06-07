@@ -51,7 +51,9 @@ jobs:
       - uses: actions/setup-python@v5
 
       - name: Install and Run Safety
-        run: safety check -r requirements.txt --full-report
+        run: |
+          pip install safety
+          safety check -r requirements.txt --full-report
 
   SAST:
     name: SAST using semgrep
