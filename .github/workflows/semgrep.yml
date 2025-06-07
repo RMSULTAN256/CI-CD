@@ -79,6 +79,12 @@ jobs:
         with:
           python-version: "3.13"
 
+      - name: Run flask app in background
+        run: |
+          pip install flask
+          nohup python app.py &
+          sleep 30
+
       - name: Install Nuclei (DAST Tool)
         run: |
           echo "http:localhost:5000" > targets.txt
