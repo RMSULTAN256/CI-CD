@@ -81,9 +81,8 @@ jobs:
 
       - name: Install Nuclei (DAST Tool)
         run: |
-          curl -s https://api.github.com/repos/projectdiscovery/nuclei/releases/latest \
-          | grep browser_download_url | grep linux_amd64 \
-          | cut -d '"' -f 4 | wget -qi - && chmod +x nuclei && sudo mv nuclei /usr/local/bin
+          apt install nuclei
+          nuclei --version
 
       - name: Download Nuclei Templates
         run: |
