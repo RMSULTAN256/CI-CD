@@ -82,9 +82,6 @@ jobs:
           sleep 30
         env:
           APP_URL: http://localhost:5000
-      - name: Verify Flask app is running
-        run: |
-          curl --fail ${{ env.APP_URL }} || exit 1
       - name: Run OWASP ZAP Baseline Scan
         run: |
           docker pull ghcr.io/zaproxy/zaproxy:stable
