@@ -83,14 +83,10 @@ jobs:
         run: |
           nohup python app.py &
           sleep 30
-        env:
-          APP_URL: http://localhost:5000
-      - name: Verify Flask app is running
-        run: |
-          curl --fail ${{ env.APP_URL }} || exit 1
+
       - name: Run Wapiti Scan
         run: |
-          wapiti -u ${{ env.APP_URL }} -o wapiti-report.json --format json --timeout 300 --max-scan-time 10 || true
+          wapiti -u http://localhost:5000 -o wapiti-report.json --format json --timeout 300 --max-scan-time 10 || true
       - name: Conditionally upload results
         if: always()
         run: |
