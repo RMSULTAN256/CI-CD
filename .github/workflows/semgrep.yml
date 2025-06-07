@@ -42,7 +42,7 @@ jobs:
         continue-on-error: true
         run: |
           pip install pytest
-          pytest ./CI-CD
+          pytest app.py
 
       - name: Run Flask app in background
         run: |
