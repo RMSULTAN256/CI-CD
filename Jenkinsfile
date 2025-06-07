@@ -5,7 +5,7 @@ pipeline {
     stage('Run nuclei') {
       steps {
         script {
-          sh 'nuclei --version'
+          sh 'nuclei -target app.py -file -type file'
         }
       }
     }
