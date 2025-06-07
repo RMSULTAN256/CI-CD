@@ -58,18 +58,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: semgrep scan
-        run: semgrep --config=.semgrep.yml --jsarif --output semgrep-report.sarif
+        run: semgrep --config=.semgrep.yml --sarif --output semgrep-report.sarif
 
       - name: upload semgrep report
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: semgrep-report.sarif
   DAST:
-    name: DAST with Nuclei
+    name: DAST with OWASP ZAP
     runs-on: ubuntu-latest
     permissions:
       contents: read
-    needs: Testing-unit
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -81,29 +80,14 @@ jobs:
         run: |
           nohup python app.py &
           sleep 30
-        env:
-          APP_URL: ${{ env.APP_URL || 'http://localhost:5000' }}
-      - name: Run Nuclei Scan
-        run: |
-          echo "${{ env.APP_URL }}" > targets.txt
-          docker run --rm \
-          -v ${{ github.workspace }}:/nuclei projectdiscovery/nuclei \
-          -t vulnerabilities -t cves -severity critical,high,medium \
-          -u ${{ env.APP_URL }} \
-          -o /nuclei/nuclei-results.txt || true
-      - name: Conditionally upload results
+      - name: Run OWASP ZAP Scan
+        uses: zaproxy/action-baseline@v0.8.0
+        with:
+          target: "http://localhost:5000"
+          fail_action: true
+      - name: Upload ZAP Report
         if: always()
-        run: |
-          if [ -s nuclei-results.txt ]; then
-            echo "Vulnerabilities found, uploading artifact..."
-            echo "upload=true" >> $GITHUB_ENV
-          else
-            echo "No vulnerabilities found, skipping upload."
-            echo "upload=false" >> $GITHUB_ENV
-          fi
-      - name: Upload Nuclei Report
-        if: env.upload == 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: nuclei-report
-          path: nuclei-results.txt
+          name: zap-report
+          path: zap_report.html
