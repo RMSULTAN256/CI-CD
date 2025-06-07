@@ -28,7 +28,7 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pytest safety
+          pip install pytest
           pip install -r requirements.txt
 
       - name: Run Tests
@@ -37,11 +37,12 @@ jobs:
         run: |
           pytest
 
-      - name: Checking Depedencies
-        id: safety-step
+      - name: Checking Depedencies with trivy
+        uses: aquasecurity/trivy-action@master
         continue-on-error: true
-        run: |
-          safety scan
+        with:
+          scan-type: fs
+          scan-path: .
 
   Testing:
     name: semgrep
