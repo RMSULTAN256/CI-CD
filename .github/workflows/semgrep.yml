@@ -55,7 +55,7 @@ jobs:
 
       - name: Scan installed packages (site-packages)
         run: |
-          python -m site --user-site  # Just to check path (optional)
+          python -m site --user-site
           trivy fs $(python -c "import site; print(site.getsitepackages()[0])")
 
   SAST:
