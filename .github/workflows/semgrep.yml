@@ -77,13 +77,17 @@ jobs:
       - name: Run flask app in background
         run: |
           nohup python app.py &
+          echo "http:localhost:5000" > targets.txt
           sleep 20
 
       - name: Install Nuclei (DAST Tool)
         run: |
-          sudo apt update
-          sudo apt install nuclei
-          nuclei --version
+          docker run --rm \
+          -v ${{ github.workspace }}:/nuclei \
+          projectdiscovery/nuclei \
+          -l /nuclei/targets.txt \
+          -severity critical,high,medium \
+          -o /nuclei/nuclei-results.txt || true
 
       - name: Download Nuclei Templates
         run: |
@@ -102,6 +106,7 @@ jobs:
             echo "upload=true" >> $GITHUB_ENV
           else
             echo "No vulnerabilities found, skipping upload."
+            echo "upload=false" >> $GITHUB_ENV
           fi
 
       - name: Upload ZAP Report
