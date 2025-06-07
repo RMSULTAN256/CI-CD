@@ -76,6 +76,12 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: semgrep-report.sarif
+
+      - name: Upload Semgrep report as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: semgrep-report
+          path: semgrep-report.sarif
   DAST:
     name: DAST with Wapiti
     runs-on: ubuntu-latest
