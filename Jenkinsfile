@@ -8,7 +8,7 @@ pipeline {
   stages {
     stage('Test') {
       steps {
-        sh 'echo "Running inside Ubuntu container"'
+        sh 'nuclei -v'
       }
     }
   }
