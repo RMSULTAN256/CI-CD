@@ -8,7 +8,11 @@ pipeline {
   stages {
     stage('Test') {
       steps {
-        sh 'nuclei -v'
+        script {
+          docker.image('projectdiscovery/nuclei:latest').inside {
+            sh 'nuclei -version'
+          }
+        }
       }
     }
   }
