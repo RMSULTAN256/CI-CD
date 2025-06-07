@@ -50,14 +50,16 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
 
-      - name: Checking Depedencies with trivy
+      - name: Install dependencies (pip)
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Trivy scan (dependency check)
         uses: aquasecurity/trivy-action@0.31.0
-        continue-on-error: true
         with:
-          scan-type: fs
-          input: .
-          format: json
-          output: trivy-report.json
+          scan-type: library
+          format: table
 
   SAST:
     name: SAST using semgrep
