@@ -11,6 +11,14 @@ on:
     - cron: 14 2 * * *
 
 jobs:
+  Depend:
+    name: Testing Dependecies
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+
   Testing-unit:
     name: Testing Code
     runs-on: ubuntu-latest
@@ -25,32 +33,35 @@ jobs:
         with:
           python-version: "3.13"
 
-      - name: Install Dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install pytest
-          pip install -r requirements.txt
-
-      - name: Run Tests
-        id: pytest-step
-        continue-on-error: true
-        run: |
-          pytest
-
       - name: Checking Depedencies with trivy
-        uses: aquasecurity/trivy-action@latests
+        uses: aquasecurity/trivy-action@0.31.0
         continue-on-error: true
         with:
           scan-type: fs
-          scan-path: .
+          input: .
 
-  Testing:
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Tests with Pytest
+        id: pytest-step
+        continue-on-error: true
+        run: |
+          pip install pytest
+          pytest
+
+      - name: Run Flask app in background
+        run: |
+          nohup python app.py &
+          sleep 10
+
+  SAST:
     name: semgrep
     runs-on: ubuntu-latest
     permissions:
       contents: read
-    env:
-      SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
     container:
       image: semgrep/semgrep
 
