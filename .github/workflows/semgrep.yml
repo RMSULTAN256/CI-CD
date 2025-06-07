@@ -89,10 +89,6 @@ jobs:
           -severity critical,high,medium \
           -o /nuclei/nuclei-results.txt || true
 
-      - name: Download Nuclei Templates
-        run: |
-          nuclei -update-templates
-
       - name: Run Nuclei
         id: zap-scan
         run: |
