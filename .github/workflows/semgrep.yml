@@ -79,23 +79,34 @@ jobs:
           nohup python app.py &
           sleep 20
 
-      - name: Run OWASP ZAP scan
+      - name: Install Nuclei (DAST Tool)
+        run: |
+          curl -s https://api.github.com/repos/projectdiscovery/nuclei/releases/latest \
+          | grep browser_download_url | grep linux_amd64 \
+          | cut -d '"' -f 4 | wget -qi - && chmod +x nuclei && sudo mv nuclei /usr/local/bin
+
+      - name: Download Nuclei Templates
+        run: |
+          nuclei -update-templates
+
+      - name: Run Nuclei
         id: zap-scan
         run: |
-          docker run -t owasp/zap2docker-stable zap-baseline.py \
-          -t http://localhost:5000 \
-          -r zap-report.html
+          nuclei -l http://localhost:5000 -severity critical,high,medium -o scan-results.txt
 
-      - name: Check Zap scan result
+      - name: Conditionally upload results
+        if: success()
         run: |
-          if [ ${{ steps.zap-scan.output.exitcode }} -eq 5]; then
-            echo "Zap Found vulnerability!"
+          if [ -s scan-results.txt ]; then
+            echo "Vulnerabilities found, Uploading Artifact.."
+            echo "upload=true" >> $GITHUB_ENV
           else
-            echo "No issue found by ZAP."
+            echo "No vulnerabilities found, skipping upload."
           fi
 
       - name: Upload ZAP Report
+        if: env.upload == 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: zap-report
-          path: zap-report.html
+          name: nuclei-report
+          path: scan-results.txt
