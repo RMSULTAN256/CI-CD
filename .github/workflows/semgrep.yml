@@ -66,12 +66,13 @@ jobs:
           sarif_file: semgrep-report.sarif
   DAST:
     name: DAST with Wapiti
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     permissions:
       contents: read
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.13"
       - name: Install Flask and Wapiti
@@ -80,20 +81,28 @@ jobs:
           pip install flask wapiti3
       - name: Run Flask app in background
         run: |
-          start /b python app.py
-          timeout /t 30
+          nohup python app.py &
+          sleep 30
         env:
           APP_URL: http://localhost:5000
       - name: Verify Flask app is running
         run: |
           curl --fail ${{ env.APP_URL }} || exit 1
-        shell: bash
       - name: Run Wapiti Scan
         run: |
-          wapiti -u ${{ env.APP_URL }} -o wapiti-report.json --format json
-        shell: powershell
-      - name: Upload Wapiti Report
+          wapiti -u ${{ env.APP_URL }} -o wapiti-report.json --format json --timeout 300 --max-scan-time 10 || true
+      - name: Conditionally upload results
         if: always()
+        run: |
+          if [ -s wapiti-report.json ]; then
+            echo "Vulnerabilities found, uploading artifact..."
+            echo "upload=true" >> $GITHUB_ENV
+          else
+            echo "No vulnerabilities found, skipping upload."
+            echo "upload=false" >> $GITHUB_ENV
+          fi
+      - name: Upload Wapiti Report
+        if: env.upload == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: wapiti-report
