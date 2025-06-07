@@ -3,11 +3,9 @@ sleep 2
 #Run the commit and push
 git add .
 sleep 1
-git status
-sleep 3
 git commit -m "updating"
-sleep 3
+sleep 1
 git push origin main
-sleep 2
+sleep 1
 
 clear
