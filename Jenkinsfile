@@ -1,26 +1,33 @@
 pipeline {
   agent any
 
+  environment {
+    PATH = "${env.HOME}/.local/bin:${env.PATH}"
+  }
+
   stages {
-    stage('checkout') {
+    stage('Checkout') {
       steps {
         checkout scm
       }
     }
 
-    stage('installing') {
+    stage('Install Semgrep') {
       steps {
         sh '''
-            if ! command -v python3 >/dev/null; then
-                sudo apt-get update && sudo apt-get install -y python3 python3-pip
-            fi
+          if ! command -v semgrep >/dev/null; then
+            pip3 install semgrep --user
+          fi
 
-            if ! command -v semgrep >/dev/null; then
-              sudo apt install semgrep
-              export PATH=$PATH:$HOME/.local/bin
-            fi
+          which semgrep
+        '''
+      }
+    }
 
-            which semgrep || echo "Semgrep not in PATH"
+    stage('Run Semgrep') {
+      steps {
+        sh '''
+          semgrep --config=auto --json --output=reports/semgrep/report.json
         '''
       }
     }
