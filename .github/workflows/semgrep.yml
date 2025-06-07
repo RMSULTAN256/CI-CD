@@ -81,7 +81,7 @@ jobs:
 
       - name: Install Nuclei (DAST Tool)
         run: |
-          apt install nuclei
+          sudo apt install nuclei
           nuclei --version
 
       - name: Download Nuclei Templates
