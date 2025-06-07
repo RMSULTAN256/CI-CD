@@ -20,6 +20,14 @@ jobs:
       SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
     container:
       image: semgrep/semgrep
+
     steps:
       - uses: actions/checkout@v4
-      - run: semgrep ci
+      - name: semgrep scan
+        run: semgrep --config=auto --json --output semgrep-report.json
+
+      - name: upload semgrep report
+        uses: actions/upload-artifact@v4
+        with:
+          name: semgrep-report
+          path: semgrep-report.json
