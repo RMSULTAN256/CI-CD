@@ -88,12 +88,8 @@ jobs:
       - name: Install Nuclei (DAST Tool)
         run: |
           echo "http:localhost:5000" > targets.txt
-          docker run --rm \
-          -v ${{ github.workspace }}:/nuclei \
-          projectdiscovery/nuclei \
-          -u http://localhost:5000 \
-          -severity critical,high,medium \
-          -o /nuclei/nuclei-results.txt || true
+          go install -v github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest
+          nuclei -h
 
       - name: Conditionally upload results
         if: success()
