@@ -22,6 +22,8 @@ jobs:
 
       - name: Checking Setup python
         uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
 
       - name: Install Dependencies
         run: |
@@ -39,7 +41,7 @@ jobs:
         id: safety-step
         continue-on-error: true
         run: |
-          safety check
+          safety scan
 
   Testing:
     name: semgrep
