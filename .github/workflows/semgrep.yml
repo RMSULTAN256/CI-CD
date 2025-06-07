@@ -38,7 +38,7 @@ jobs:
           pytest
 
       - name: Checking Depedencies with trivy
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@latests
         continue-on-error: true
         with:
           scan-type: fs
