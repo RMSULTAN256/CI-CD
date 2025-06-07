@@ -1,12 +1,8 @@
 pipeline {
-  agent {
-    docker {
-      image 'ubuntu'
-    }
-  }
+  agent any
 
   stages {
-    stage('Test') {
+    stage('Run nuclei') {
       steps {
         script {
           docker.image('projectdiscovery/nuclei:latest').inside {
