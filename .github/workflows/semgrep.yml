@@ -112,3 +112,15 @@ jobs:
         with:
           name: wapiti-report
           path: wapiti-report.json
+
+  Deploy:
+    name: Deploy with Docker
+    runs-on: ubuntu-latest
+    needs: SAST
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Testing
+        run: |
+          echo "Docker"
