@@ -89,11 +89,6 @@ jobs:
           -severity critical,high,medium \
           -o /nuclei/nuclei-results.txt || true
 
-      - name: Run Nuclei
-        id: zap-scan
-        run: |
-          nuclei -l http://localhost:5000 -severity critical,high,medium -o scan-results.txt
-
       - name: Conditionally upload results
         if: success()
         run: |
