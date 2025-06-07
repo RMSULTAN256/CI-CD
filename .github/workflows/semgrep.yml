@@ -50,18 +50,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
 
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-
-      - name: Get site-packages path
-        id: get-site-packages
-        run: echo "::set-output name=path::$(python -c 'import site; print(site.getsitepackages()[0])')"
-
-      - name: Run Trivy scan on site-packages
-        uses: aquasecurity/trivy-action@0.31.0
-        with:
-          scan-type: fs
-          input: ${{ steps.get-site-packages.outputs.path }}
+      - name: Install and Run Safety
+        run: safety check -r requirements.txt --full-report
 
   SAST:
     name: SAST using semgrep
