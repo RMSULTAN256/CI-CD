@@ -9,8 +9,19 @@ on:
       - .github/workflows/semgrep.yml
   schedule:
     - cron: 14 2 * * *
-name: Semgrep
+
 jobs:
+  run-flask:
+    name: Testing Flask
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Flask App.py
+        run: |
+          python3 app.py
+
   Testing:
     name: semgrep
     runs-on: ubuntu-latest
