@@ -2,14 +2,12 @@ pipeline {
   agent any
 
   stages {
-    stage('Checkout') {
+    stage('checkout') {
       steps {
         checkout scm
       }
     }
-  }
 
-  stages {
     stage('installing') {
       steps {
         sh '''
