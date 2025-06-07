@@ -55,6 +55,15 @@ jobs:
           pip install safety
           safety check -r requirements.txt --full-report
 
+      - name: Install OSV-Scanner
+        run: |
+          curl -sSfL https://github.com/google/osv-scanner/releases/latest/download/osv-scanner-linux-amd64 -o osv-scanner
+          chmod +x osv-scanner
+          sudo mv osv-scanner /usr/local/bin
+
+      - name: run OSV Scanner
+        run: osv-scanner --lockfile=requirements.txt
+
   SAST:
     name: SAST using semgrep
     runs-on: ubuntu-latest
@@ -125,4 +134,14 @@ jobs:
 
       - name: Testing
         run: |
-          echo "Docker"
+          echo "${{ secrets.GHCR_TOKEN}}" | docker login ghcr.io -u ${{ github.actor}} --password-stdin
+
+      - name: Build Docker Image
+        run: |
+          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/myweb
+          docker build -t $IMAGE_ID:latest .
+
+      - name: Push Docker Image
+        run: |
+          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/myweb
+          docker push $IMAGE_ID:latest
