@@ -89,6 +89,10 @@ jobs:
         run: |
           echo "http:localhost:5000" > targets.txt
           docker pull projectdiscovery/nuclei
+          docker run --rm -v ${{ github.workspace }}:/nuclei projectdiscovery/nuclei \
+          -l /nuclei/targets.txt \
+          -severity critical,high,medium \
+          -o /nuclei/nuclei-results.txt || true
 
       - name: Conditionally upload results
         if: success()
