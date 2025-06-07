@@ -49,6 +49,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
 
       - name: Install and Run Safety
         run: |
@@ -58,7 +60,7 @@ jobs:
   SAST:
     name: SAST using semgrep
     runs-on: ubuntu-latest
-    needs: Testing-unit
+    needs: Dependency-audit
     permissions:
       contents: read
       security-events: write
@@ -118,7 +120,7 @@ jobs:
   Deploy:
     name: Deploy with Docker
     runs-on: ubuntu-latest
-    needs: SAST
+    needs: DAST
 
     steps:
       - uses: actions/checkout@v4
