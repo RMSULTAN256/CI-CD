@@ -12,22 +12,10 @@ pipeline {
       }
     }
 
-    stage('Install Semgrep') {
-      steps {
-        sh '''
-          if ! command -v semgrep >/dev/null; then
-            pip3 install semgrep --user
-          fi
-
-          which semgrep
-        '''
-      }
-    }
-
     stage('Run Semgrep') {
       steps {
         sh '''
-          semgrep --config=auto --json --output=reports/semgrep/report.json
+            docker run --rm -v $PWD:/src returntocorp/semgrep semgrep --config=auto --json --output=/src/reports/semgrep/report.json
         '''
       }
     }
